@@ -1,41 +1,26 @@
 // Create web server
 
-// import
+// Import express
 const express = require('express');
-const app = express();
-const path = require('path');
-const bodyParser = require('body-parser');
-const fs = require('fs');
-const { Console } = require('console');
+const router = express.Router();
 
-// set up
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+// Import comments controller
+const controller = require('../controllers/comments.controller');
 
-// set up data
-let comments = [];
-let commentsPath = path.join(__dirname, 'data', 'comments.json');
+// Get all comments
+router.get('/', controller.index);
 
-// read data
-fs.readFile(commentsPath, (err, data) => {
-    if (err) throw err;
-    comments = JSON.parse(data);
-});
+// Create new comment
+router.post('/', controller.create);
 
-// write data
-function saveComments() {
-    fs.writeFile(commentsPath, JSON.stringify(comments), (err) => {
-        if (err) throw err;
-    });
-}
+// Get comment by id
+router.get('/:id', controller.get);
 
-// get comments
-app.get('/api/comments', (req, res) => {
-    res.send(comments);
-});
+// Update comment by id
+router.put('/:id', controller.update);
 
-// post comments
-app.post('/api/comments', (req, res) => {
-    let comment = {
-        id: comments.length + 1,
+// Delete comment by id
+router.delete('/:id', controller.delete);
+
+// Export router
+module.exports = router;
